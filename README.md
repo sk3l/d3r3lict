@@ -1,3 +1,3 @@
-# d3r3lict 
+# derelict
 
 A home for my Vagrant configs
