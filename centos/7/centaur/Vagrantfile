@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "centos/7"
-  config.vm.hostname = "skel-centos-7"
+  config.vm.hostname = "centaur"
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   # config.vm.network "private_network", ip: "192.168.33.10"
-  config.vm.network "private_network", ip: "192.168.10.20", :mac => "5C4509297630"
+  config.vm.network "private_network", ip: "192.168.10.110", :mac => "5C4500000010"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-
+  config.vm.synced_folder "#{Dir.home}/.local/share/#{config.vm.hostname}", "/vagrant_data"
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
   #
-    vb.name = "skel-centos-7"
+   vb.name = "centaur"
      # Customize the amount of memory on the VM:
     vb.cpus = "2"
     vb.memory = "1024"
@@ -70,4 +70,18 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+  config.vm.provision "shell", privileged: true, inline: <<-SHELL
+        echo -e "~~~~~~ Confirming ansible installation... ~~~~~~"
+        if ! yum list installed 2>&1 | grep ansible > /dev/null 2>&1;then
+            echo -e "ansible not found; installing..."
+            yum install -y ansible
+        fi
+        echo -e "ansible is installed"
+        echo -e "~~~~~~ Running ansible playbook... ~~~~~~"
+        if [[ ! -d /vagrant_data/fatline ]];then
+            echo -e "!!! Could not locate ansible playbook folder !!!"
+        else
+            ansible-playbook -i /vagrant_data/fatline/hosts /vagrant_data/fatline/site.yml
+        fi
+   SHELL
 end
