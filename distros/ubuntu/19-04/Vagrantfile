@@ -2,9 +2,9 @@
 # vi: set ft=ruby :
 
 # Define variables, with default values, that are read from OS env vars
-host_name = ENV["VAGRANT_HOST_NAME"]  || "skel-ubuntu-1804"
+host_name = ENV["VAGRANT_HOST_NAME"]  || "skel-ubuntu-1904"
 host_cpu  = ENV["VAGRANT_HOST_CPU"]   || "2"
-host_ram  = ENV["VAGRANT_HOST_NAME"]  || "2048"
+host_ram  = ENV["VAGRANT_HOST_RAM"]   || "2048"
 host_ip   = ENV["VAGRANT_HOST_IP"]    || "192.168.45.30"
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/disco64"
   config.vm.hostname = host_name
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -60,6 +60,14 @@ Vagrant.configure("2") do |config|
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
   #
+
+  # Fix for slow Ubuntu 19.04 boot time
+  # The VM serial port apparently needs to be attached to a file
+  # https://bugs.launchpad.net/cloud-images/+bug/1829625
+     vb.customize [ "modifyvm", :id, "--uartmode1", "file",
+                   File.join(Dir.pwd, "ubuntu-disco-19.04-cloudimg-console.log")
+     ]
+
     vb.name = host_name
     # Customize the amount of memory on the VM:
     vb.cpus = host_cpu
