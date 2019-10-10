@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-  config.vm.synced_folder "#{Dir.home}/.local/share/#{config.vm.hostname}", "/vagrant_data"
+  #config.vm.synced_folder "#{Dir.home}/.local/share/#{config.vm.hostname}", "/vagrant_data"
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -68,6 +68,9 @@ Vagrant.configure("2") do |config|
   #
   # View the documentation for the provider you are using for more
   # information on available options.
+   config.vm.provision "file",
+    source: "../../../movein",
+    destination: "~/movein"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
@@ -93,5 +96,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", privileged: true, inline: <<-SHELL
         echo -e "~~~~~~ Performing movein provisioning ~~~~~~"
+        mv /home/vagrant/movein /root
+        cd /root/movein
+        ./movein.sh crates/base/user crates/centos/centos_base crates/centos/centos_dev crates/base/dev
   SHELL
 end
