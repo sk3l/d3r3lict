@@ -82,8 +82,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", privileged: true, inline: <<-SHELL
         echo -e "~~~~~~ Performing movein provisioning ~~~~~~"
-        mv /home/vagrant/movein /root
-        cd /root/movein
+        export BASE_GROUPS=wheel
+        mv /home/vagrant/movein /tmp
+        cd /tmp/movein
         ./movein.sh base_user centos_base centos_dev base_dev
   SHELL
 end
