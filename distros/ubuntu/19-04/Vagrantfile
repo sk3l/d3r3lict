@@ -89,4 +89,12 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+  config.vm.provision "shell", privileged: true, inline: <<-SHELL
+        echo -e "~~~~~~ Performing movein provisioning ~~~~~~"
+        export BASE_GROUPS=sudo
+        mv /home/vagrant/movein /root
+        cd /root/movein
+        ./movein.sh base_user ubuntu_base ubuntu_dev base_dev
+  SHELL
+
 end
