@@ -61,21 +61,26 @@ Vagrant.configure("2") do |config|
   #   vb.gui = true
   #
 
+    vb.name = host_name
+    # Customize the amount of memory on the VM:
+    vb.cpus = host_cpu
+    vb.memory = host_ram
+
   # Fix for slow Ubuntu 19.04 boot time
   # The VM serial port apparently needs to be attached to a file
   # https://bugs.launchpad.net/cloud-images/+bug/1829625
      vb.customize [ "modifyvm", :id, "--uartmode1", "file",
                    File.join(Dir.pwd, "ubuntu-disco-19.04-cloudimg-console.log")
      ]
-
-    vb.name = host_name
-    # Customize the amount of memory on the VM:
-    vb.cpus = host_cpu
-    vb.memory = host_ram
    end
+
   #
   # View the documentation for the provider you are using for more
   # information on available options.
+
+   config.vm.provision "file",
+    source: "../../../movein",
+    destination: "~/movein"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
