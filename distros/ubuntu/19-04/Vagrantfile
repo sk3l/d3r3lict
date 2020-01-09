@@ -1,6 +1,14 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Look for a user-defined SSH key in the current directory,
+# and if one is found, use it as env var in Vagrant provision
+# TO DO: probably a better solution to this
+guest_ssh_key = nil
+if File.exist?("guest_key.pub")
+  guest_ssh_key = File.read("guest_key.pub")
+end
+
 # Define variables, with default values, that are read from OS env vars
 host_name = ENV["VAGRANT_HOST_NAME"]  || "skel-ubuntu-1904"
 host_cpu  = ENV["VAGRANT_HOST_CPU"]   || "2"
@@ -96,11 +104,13 @@ Vagrant.configure("2") do |config|
   #   apt-get install -y apache2
   # SHELL
 
-  config.vm.provision "shell", privileged: true, inline: <<-SHELL
-   echo -e "~~~~~~ Performing movein provisioning ~~~~~~"
-   export BASE_GROUPS=sudo
-   mv /home/vagrant/movein /root
-   cd /root/movein
-   ./movein.sh base_user ubuntu_base ubuntu_dev base_dev
-  SHELL
+  config.vm.provision "shell",
+    privileged: true,
+    env: {"BASE_SSH_KEY" => guest_ssh_key, "BASE_GROUPS" => "sudo"},
+    inline: <<-SHELL
+      echo -e "~~~~~~ Performing movein provisioning ~~~~~~"
+      mv /home/vagrant/movein /root
+      cd /root/movein
+      ./movein.sh base_user ubuntu_base ubuntu_dev base_dev
+    SHELL
 end
